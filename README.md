@@ -1,6 +1,6 @@
 # TechXchange ブログ変換ツール
 
-このリポジトリには、MarkdownファイルをTechXchange Community用のHTMLに変換するツールが含まれています。
+このリポジトリには、MarkdownファイルをTechXchange Community用のHTMLに変換するPythonツールが含まれています。
 
 ## 📋 目次
 
@@ -20,8 +20,8 @@
 - ✅ Markdownから目次付きHTMLへの自動変換
 - ✅ TechXchangeに適したクリーンなHTML出力（スタイル指定なし）
 - ✅ 画像を明確なプレースホルダーに変換
-- ✅ 各セクション末尾に「トップに戻る」リンクを自動追加
-- ✅ Mac/Linux/WSL対応
+- ✅ 各h1/h2セクション末尾に「トップに戻る」リンクを自動追加
+- ✅ Windows/Mac/Linux対応
 
 ## セットアップ
 
@@ -39,68 +39,92 @@ cd techxchange-blog-tools
 
 ### 必須ツール
 
-- **OS**: macOS, Linux, または Windows (WSL)
-- **Pandoc**: 2.0以上
-- **sed**: テキスト処理用（macOS/Linux/WSLに標準搭載）
-- **awk**: テキスト処理用（macOS/Linux/WSLに標準搭載）
+- **Python**: 3.8以上
+- **pip**: Pythonパッケージマネージャー
 
 ### 確認方法
 
 ```bash
-# Pandocのバージョン確認
-pandoc --version
+# Pythonのバージョン確認
+python --version
+# または
+python3 --version
 
-# sed/awkの確認（通常は標準搭載）
-which sed
-which awk
+# pipの確認
+pip --version
+# または
+pip3 --version
 ```
-
-**注意**: `sed`と`awk`はmacOS、Linux、WSLに標準でインストールされています。もし見つからない場合は、パッケージマネージャーでインストールしてください。
 
 ## インストール
 
-### Pandocのインストール
-
-#### macOS
+### 1. 依存関係のインストール
 
 ```bash
-brew install pandoc
+# リポジトリディレクトリで実行
+pip install -r requirements.txt
+
+# または、ユーザー環境にインストール（推奨）
+pip install --user -r requirements.txt
 ```
 
-#### Ubuntu/WSL
+**WSL Ubuntu 24.04以降の場合:**
+
+システムPythonへの直接インストールが制限されているため、仮想環境を使用します：
 
 ```bash
-sudo apt-get update
-sudo apt-get install pandoc
+# 仮想環境の作成（初回のみ）
+python3 -m venv venv
+
+# 仮想環境の有効化
+source venv/bin/activate
+
+# 依存関係のインストール
+pip install -r requirements.txt
 ```
 
-#### インストール確認
+### 2. インストール確認
 
 ```bash
-pandoc --version
+# WSLの場合（仮想環境を有効化してから）
+python convert.py --help
+
+# Windows/Mac/Linuxの場合
+python convert.py --help
 ```
 
-バージョン情報が表示されればOKです。
+ヘルプメッセージが表示されればOKです。
 
 ## 使い方
 
 ### 基本的な使い方
 
 ```bash
-# ブログディレクトリに移動
-cd "GCM2使用方法1 CSVインポート"
+# 方法1: pythonコマンドで実行
+python convert.py "記事.md"
 
-# 変換実行（WSL環境の場合）
-wsl bash path/to/techxchange-blog-tools/convert-simple.sh "GCM2使用方法1 CSVインポート.md"
+# 方法2: 直接実行（Unix/Linux/WSL/Mac）
+./convert.py "記事.md"
 
-# Mac/Linuxの場合
-bash path/to/techxchange-blog-tools/convert-simple.sh "GCM2使用方法1 CSVインポート.md"
+# 出力ファイル名を指定
+python convert.py "記事.md" "output.html"
+
+# 別のディレクトリのファイルを変換
+python convert.py "../ブログディレクトリ/記事.md" "../ブログディレクトリ/output.html"
 ```
 
-### 出力ファイル名を指定
+### WSL環境での使い方
 
 ```bash
-wsl bash path/to/blog-tools/convert-simple.sh "記事.md" "techxchange.html"
+# 仮想環境を有効化
+cd techxchange-blog-tools
+source venv/bin/activate
+
+# 変換実行
+python convert.py "../ブログディレクトリ/記事.md"
+
+# 作業が終わったら仮想環境を無効化
+deactivate
 ```
 
 ## ワークフロー
@@ -109,39 +133,100 @@ wsl bash path/to/blog-tools/convert-simple.sh "記事.md" "techxchange.html"
 
 Bob/VSCode/TyporaなどでMarkdownファイルを作成します。
 
-```markdown
-# ブログタイトル
+#### 📝 Markdownファイルの記述ルール
 
-## セクション1
+**シンプルなルール:**
+
+1. **通常通りMarkdownを記述**
+   - h1（`#`）とh2（`##`）を使って構造化
+   - 画像は通常通り`![説明](path/to/image.png)`で記述
+
+2. **AI生成コンテンツの注記（任意）**
+   - ファイルの先頭に注記を記載できます
+   - 例: `このブログはAIによって生成されたコンテンツを含みます。`
+
+#### 推奨されるMarkdown構造
+
+```markdown
+このブログはAIによって生成されたコンテンツを含みます。(スクショ、コマンド出力、ログ、トレースなどには含みません)
+
+# IBM Guardium Cryptography Manager 2.0.1 リリース紹介
+
+## はじめに
 
 本文...
 
 ![スクリーンショット](media/image1.png)
 
-## セクション2
+## 主要な機能
 
 本文...
+
+### サブセクション
+
+詳細...
 ```
+
+#### 変換後のHTML構造
+
+```html
+<div class="toc">
+<span class="toctitle">目次</span>
+<ul>
+  <li><a href="#ibm-guardium-cryptography-manager-201">IBM Guardium Cryptography Manager 2.0.1 リリース紹介</a>
+    <ul>
+      <li><a href="#はじめに">はじめに</a></li>
+    </ul>
+  </li>
+  <li><a href="#主要な機能">主要な機能</a></li>
+</ul>
+</div>
+
+<a id="page-top" style="display: none;"></a>
+<p>このブログはAIによって生成されたコンテンツを含みます。...</p>
+
+<h1 id="ibm-guardium-cryptography-manager-201">IBM Guardium Cryptography Manager 2.0.1 リリース紹介</h1>
+<p style="text-align: right;"><a href="#page-top">トップに戻る</a></p>
+
+<h2 id="はじめに">はじめに</h2>
+<p>本文...</p>
+<div class="image-placeholder">
+<strong>[画像をここに挿入: media/image1.png]</strong>
+<br><em>説明: スクリーンショット</em>
+</div>
+<p style="text-align: right;"><a href="#page-top">トップに戻る</a></p>
+
+<h2 id="主要な機能">主要な機能</h2>
+<p>本文...</p>
+<p style="text-align: right;"><a href="#page-top">トップに戻る</a></p>
+```
+
+**特徴:**
+- h1とh2の両方が目次に含まれます（階層構造付き）
+- 各h1/h2セクションの末尾に「トップに戻る」リンクが自動追加されます
+- 画像はプレースホルダーに変換されます
+- ページトップに隠しアンカー（`#page-top`）が追加されます
 
 ### 2. HTMLに変換
 
 ```bash
-# WSL環境
-cd "ブログディレクトリ"
-wsl bash path/to/techxchange-blog-tools/convert-simple.sh "記事.md"
+# WSL環境（仮想環境を有効化してから）
+cd techxchange-blog-tools
+source venv/bin/activate
+python convert.py "../ブログディレクトリ/記事.md"
 
-# Mac/Linux環境
-cd "ブログディレクトリ"
-bash path/to/techxchange-blog-tools/convert-simple.sh "記事.md"
+# Windows/Mac/Linux環境
+cd techxchange-blog-tools
+python convert.py "../ブログディレクトリ/記事.md"
 ```
 
 ### 3. 生成されたHTMLを確認
 
 ブラウザで開いて以下を確認：
-- ✅ 目次が正しく生成されている
+- ✅ 目次が正しく生成されている（h1とh2の階層構造）
 - ✅ 見出しのリンクが動作する
 - ✅ 画像プレースホルダーが表示されている
-- ✅ 各セクションに「トップに戻る」リンクがある
+- ✅ 各h1/h2セクションに「トップに戻る」リンクがある
 
 ### 4. TechXchangeに投稿
 
@@ -156,9 +241,11 @@ bash path/to/techxchange-blog-tools/convert-simple.sh "記事.md"
 techxchange-blog-tools/
 ├── README.md                  # このファイル
 ├── QUICKSTART.md              # クイックガイド
-├── convert-simple.sh          # 変換スクリプト
+├── convert.py                 # 変換スクリプト（Python）
+├── requirements.txt           # Python依存関係
 ├── .gitignore                 # Git除外設定
-└── .gitattributes             # Git属性設定（LF改行）
+├── .gitattributes             # Git属性設定（LF改行）
+└── venv/                      # Python仮想環境（WSL用、自動生成）
 
 ブログディレクトリ/
 ├── 記事.md                    # 執筆用Markdown
@@ -180,6 +267,8 @@ techxchange-blog-tools/
 
 VSCodeのプレビューなどで画像が表示されます。
 
+**注意:** バックスラッシュ（`\`）を使った画像パスも自動的にスラッシュ（`/`）に正規化されます。
+
 ### HTML変換後
 
 画像は以下のようなプレースホルダーに変換されます：
@@ -187,7 +276,7 @@ VSCodeのプレビューなどで画像が表示されます。
 ```html
 <div class="image-placeholder">
 <strong>[画像をここに挿入: media/image1.png]</strong>
-<em>説明: 説明文</em>
+<br><em>説明: 説明文</em>
 </div>
 ```
 
@@ -198,20 +287,20 @@ TechXchangeでこのプレースホルダーを見つけて、対応する画像
 ### 目次
 
 - 自動生成される目次（TOC）
-- h1とh2レベルの見出しを含む
+- h1とh2レベルの見出しを含む（階層構造付き）
 - クリック可能なリンク
 
 ### スタイル
 
 - **カスタムスタイルなし**: 独自のCSS/フォント指定は一切なし
-- **Pandoc最小限の属性のみ**: `class`属性のみ（`title`, `TOC`など）
+- **最小限の属性のみ**: `class`属性と`id`属性のみ
 - **TechXchange完全互換**: サイトのデフォルトスタイルに完全依存
 
 ### トップに戻るリンク
 
-- 各h1セクションの末尾に自動追加
-- `href="#"`で汎用的に実装（特定のセクション名に依存しない）
-- 既存の「トップに戻る」リンクも自動的に統一
+- 各h1/h2セクションの末尾に自動追加
+- `href="#page-top"`で隠しアンカーにリンク
+- ページトップに確実に戻る
 
 ### 画像プレースホルダー
 
@@ -221,37 +310,43 @@ TechXchangeでこのプレースホルダーを見つけて、対応する画像
 
 ## トラブルシューティング
 
-### Pandocが見つからない
+### Pythonが見つからない
 
-**エラー:** `Pandocがインストールされていません`
+**エラー:** `command not found: python`
 
 **解決策:**
-1. Pandocをインストール（上記参照）
+1. Pythonをインストール
+   - Windows: [python.org](https://www.python.org/)からインストーラーをダウンロード
+   - macOS: `brew install python3`
+   - Ubuntu/WSL: `sudo apt-get install python3 python3-pip`
 2. ターミナルを再起動
-3. `pandoc --version`で確認
+3. `python --version`または`python3 --version`で確認
 
-### sed/awkが見つからない
+### 依存関係のインストールエラー
 
-**エラー:** `command not found: sed` または `command not found: awk`
+**エラー:** `error: externally-managed-environment`（Ubuntu 24.04以降）
 
 **解決策:**
-
-macOS/Linux/WSLには通常標準搭載されていますが、もし見つからない場合：
+仮想環境を使用してください：
 
 ```bash
-# Ubuntu/WSL
-sudo apt-get install sed gawk
+# 仮想環境の作成
+python3 -m venv venv
 
-# macOS（通常は不要）
-brew install gnu-sed gawk
+# 仮想環境の有効化
+source venv/bin/activate
+
+# 依存関係のインストール
+pip install -r requirements.txt
 ```
 
 ### 変換エラーが発生する
 
-**原因:** Markdownファイルの構文エラー
+**原因:** Markdownファイルの構文エラーまたはエンコーディングの問題
 
 **解決策:**
 - Markdownの構文を確認
+- ファイルがUTF-8エンコーディングであることを確認
 - 特殊文字が正しくエスケープされているか確認
 
 ### 画像が表示されない（ローカルプレビュー時）
@@ -268,42 +363,35 @@ brew install gnu-sed gawk
 
 **解決策:**
 - 適切な見出しを追加
-- 見出しレベルは`#`（h1）から`##`（h2）まで使用
-
-### WSLでパスエラーが発生する
-
-**原因:** Windowsパスに特殊文字（スペース、`#`など）が含まれる
-
-**解決策:**
-- ブログディレクトリ内で実行
-- 相対パスを使用
+- 見出しレベルは`#`（h1）と`##`（h2）を使用
 
 ## 使用例
 
 ### 例1: 基本的な変換
 
 ```bash
-cd "GCM2使用方法1 CSVインポート"
-wsl bash path/to/techxchange-blog-tools/convert-simple.sh "GCM2使用方法1 CSVインポート.md"
+cd techxchange-blog-tools
+python convert.py "../GCM2使用方法1 CSVインポート/GCM2使用方法1 CSVインポート.md"
 ```
 
 ### 例2: 出力ファイル名を指定
 
 ```bash
-cd "QSR OSS版紹介ブログ"
-wsl bash path/to/techxchange-blog-tools/convert-simple.sh "QSR OSS版紹介ブログ.md" "techxchange-qsr.html"
+python convert.py "../QSR OSS版紹介ブログ/QSR OSS版紹介ブログ.md" "../QSR OSS版紹介ブログ/techxchange-qsr.html"
 ```
 
-### 例3: 複数のブログを一括変換
+### 例3: WSL環境での使用
 
 ```bash
-for dir in */; do
-  if [ -f "$dir"/*.md ]; then
-    cd "$dir"
-    wsl bash path/to/techxchange-blog-tools/convert-simple.sh *.md
-    cd ..
-  fi
-done
+# 仮想環境を有効化
+cd techxchange-blog-tools
+source venv/bin/activate
+
+# 変換実行
+python convert.py "../ブログディレクトリ/記事.md"
+
+# 作業が終わったら無効化
+deactivate
 ```
 
 ## ヒントとベストプラクティス
@@ -330,26 +418,27 @@ done
 
 ## 技術仕様
 
-### 使用しているツール
+### 使用しているライブラリ
 
-- **Pandoc**: Markdown→HTML変換
-- **sed**: 画像とリンクの正規表現置換
-- **awk**: セクション単位の処理と「トップに戻る」リンク追加
+- **markdown**: Markdown→HTML変換（目次生成機能付き）
+- **beautifulsoup4**: HTML解析と操作
+- **lxml**: BeautifulSoupの高速パーサー
 
 ### 処理フロー
 
-1. `sed`で画像をプレースホルダーに変換
-2. `sed`で既存の「トップに戻る」リンクを統一
-3. `awk`で各h1セクション末尾に「トップに戻る」リンクを追加
-4. Pandocで目次付きHTMLに変換
-5. `<body>`タグ内のコンテンツのみを抽出
+1. Markdownファイルを読み込み
+2. 画像をプレースホルダーに変換（バックスラッシュ→スラッシュ正規化）
+3. Markdown→HTML変換（目次付き、h1とh2レベル）
+4. ページトップに隠しアンカーを追加
+5. 各h1/h2セクション末尾に「トップに戻る」リンクを追加
+6. HTMLファイルに出力
 
 ## サポート
 
 問題が発生した場合は、以下を確認してください：
 
-1. Pandocのバージョン: `pandoc --version`
-2. sed/awkの存在確認: `which sed`, `which awk`
+1. Pythonのバージョン: `python --version`
+2. 依存関係のインストール状況: `pip list | grep -E "markdown|beautifulsoup4|lxml"`
 3. 入力ファイルのエンコーディング: UTF-8であることを確認
 4. エラーメッセージの全文をコピー
 

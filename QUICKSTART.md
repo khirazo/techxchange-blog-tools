@@ -1,154 +1,180 @@
 # クイックスタートガイド
 
-TechXchange用ブログ変換ツールの簡単な使い方ガイドです。
+TechXchange ブログ変換ツールの最速セットアップガイドです。
 
-## 🚀 5分で始める
+## 🚀 5分でセットアップ
 
 ### 1. リポジトリをクローン
 
 ```bash
-# GitHubからクローン
 git clone https://github.com/khirazo/techxchange-blog-tools.git
-
-# ディレクトリに移動
 cd techxchange-blog-tools
 ```
 
-### 2. Pandocをインストール
+### 2. 依存関係をインストール
+
+#### Windows/Mac/Linux（通常）
 
 ```bash
-# Ubuntu/WSL
-sudo apt-get update && sudo apt-get install pandoc
-
-# macOS
-brew install pandoc
+pip install -r requirements.txt
 ```
 
-**注意**: `sed`と`awk`はmacOS/Linux/WSLに標準搭載されています。
-
-### 3. ブログを変換
+#### WSL Ubuntu 24.04以降
 
 ```bash
-# ブログディレクトリに移動
-cd "あなたのブログディレクトリ"
+# 仮想環境を作成
+python3 -m venv venv
 
-# 変換実行（WSL）
-wsl bash path/to/techxchange-blog-tools/convert-simple.sh "記事.md"
+# 仮想環境を有効化
+source venv/bin/activate
 
-# 変換実行（Mac/Linux）
-bash path/to/techxchange-blog-tools/convert-simple.sh "記事.md"
+# 依存関係をインストール
+pip install -r requirements.txt
 ```
 
-### 4. 結果を確認
+### 3. 変換を実行
 
-生成された`.html`ファイルをブラウザで開いて確認します。
+```bash
+# 基本的な使い方
+python convert.py "記事.md"
 
-### 5. TechXchangeに投稿
+# 出力ファイル名を指定
+python convert.py "記事.md" "output.html"
+```
+
+## 📝 Markdownの書き方
+
+### 最小限の例
+
+```markdown
+このブログはAIによって生成されたコンテンツを含みます。
+
+# ブログタイトル
+
+## はじめに
+
+本文を書く...
+
+![スクリーンショット](media/image1.png)
+
+## まとめ
+
+まとめを書く...
+```
+
+### ポイント
+
+- ✅ h1（`#`）とh2（`##`）を使って構造化
+- ✅ 画像は通常通り`![説明](path)`で記述
+- ✅ AI生成注記は任意（ファイル先頭に記載）
+
+## 🎯 変換後の確認
+
+生成されたHTMLファイルをブラウザで開いて確認：
+
+- ✅ 目次が生成されている
+- ✅ 各セクションに「トップに戻る」リンクがある
+- ✅ 画像がプレースホルダーになっている
+
+## 📤 TechXchangeへの投稿
 
 1. HTMLファイルをテキストエディタで開く
 2. 全内容をコピー
 3. TechXchangeのHTMLエディタに貼り付け
-4. `[画像をここに挿入: ...]`を見つけて画像をアップロード
-
-## 📝 完全なワークフロー
-
-```
-1. GitHubからクローン
-   ↓
-2. Pandocインストール
-   ↓
-3. Markdown作成 (Bob/VSCode)
-   ↓
-4. HTML変換 (スクリプト)
-   ↓
-5. ブラウザ確認
-   ↓
-6. TechXchange投稿 (画像アップロード)
-```
+4. 画像プレースホルダーを見つけて画像をアップロード
 
 ## 💡 よくある質問
 
-### Q: Qiitaにも投稿できますか？
+### Q: WSLで仮想環境を毎回有効化する必要がある？
 
-A: 元のMarkdownファイルをそのままQiitaに投稿できます。(このツールは不要です)
+A: はい。作業開始時に以下を実行：
 
-### Q: 画像はどうなりますか？
+```bash
+cd techxchange-blog-tools
+source venv/bin/activate
+```
 
-A: `[画像をここに挿入: ...]`というプレースホルダーに変換されます。TechXchangeで手動アップロードが必要です。
+作業終了時に無効化：
 
-### Q: 目次は自動生成されますか？
+```bash
+deactivate
+```
 
-A: はい！Markdownの見出し（`#`, `##`）から自動生成されます。
+### Q: 画像のパスにバックスラッシュを使っても大丈夫？
 
-### Q: 「トップに戻る」リンクは？
+A: はい。自動的にスラッシュに正規化されます。
 
-A: 各h1セクションの末尾に自動的に追加されます。
+### Q: h1とh2以外の見出しは？
 
-### Q: スタイルはカスタマイズできますか？
+A: h3以降も使えますが、目次にはh1とh2のみが含まれます。
 
-A: このツールはスタイル指定を一切含まないため、TechXchangeのデフォルトスタイルが適用されます。
+### Q: 既存の「トップに戻る」リンクはどうなる？
+
+A: 自動的に削除され、各h1/h2セクション末尾に統一されたリンクが追加されます。
 
 ## 🔧 トラブルシューティング
 
-### Pandocが見つからない
+### Pythonが見つからない
 
 ```bash
-# インストール確認
-pandoc --version
-
-# 再インストール（Ubuntu/WSL）
-sudo apt-get install --reinstall pandoc
+# バージョン確認
+python --version
+# または
+python3 --version
 ```
 
-### sed/awkが見つからない
+見つからない場合は[README.md](README.md)のインストール手順を参照。
 
-通常はmacOS/Linux/WSLに標準搭載されていますが、もし見つからない場合：
+### 依存関係のインストールエラー
+
+Ubuntu 24.04以降で`externally-managed-environment`エラーが出る場合：
 
 ```bash
-# Ubuntu/WSL
-sudo apt-get install sed gawk
-
-# 確認
-which sed
-which awk
+# 仮想環境を使用
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-### パスエラーが発生する
+### 変換エラー
 
-ブログディレクトリ内で実行してください：
-
-```bash
-cd "ブログディレクトリ"
-wsl bash path/to/techxchange-blog-tools/convert-simple.sh "記事.md"
-```
+- ファイルがUTF-8エンコーディングか確認
+- Markdownの構文エラーがないか確認
+- エラーメッセージの全文を確認
 
 ## 📚 詳細情報
 
 詳しい使い方は[README.md](README.md)を参照してください。
 
-## 🎯 生成されるHTML例
+## 🎓 使用例
 
-```html
-<header id="title-block-header">
-<h1 class="title">タイトル</h1>
-</header>
-<nav id="TOC" role="doc-toc">
-<ul>
-<li><a href="#セクション1">セクション1</a></li>
-</ul>
-</nav>
-<h1 id="セクション1">セクション1</h1>
-<p>本文...</p>
-<div class="image-placeholder">
-<strong>[画像をここに挿入: media/image1.png]</strong>
-<em>説明: 画像の説明</em>
-</div>
-<p><a href="#">トップに戻る</a></p>
+### 例1: 基本的な変換
+
+```bash
+python convert.py "../ブログディレクトリ/記事.md"
 ```
 
-## ✨ 主な特徴
+### 例2: 出力先を指定
 
-- **スタイル指定なし**: TechXchangeのデフォルトスタイルを使用
-- **目次自動生成**: Markdownの見出しから自動作成
-- **トップに戻るリンク**: 各セクション末尾に自動追加
-- **クロスプラットフォーム**: Mac/Linux/WSL対応
+```bash
+python convert.py "記事.md" "techxchange.html"
+```
+
+### 例3: WSL環境
+
+```bash
+# 仮想環境を有効化
+source venv/bin/activate
+
+# 変換実行
+python convert.py "../ブログディレクトリ/記事.md"
+
+# 無効化
+deactivate
+```
+
+---
+
+**これで準備完了です！** 🎉
+
+詳細な情報が必要な場合は[README.md](README.md)を参照してください。

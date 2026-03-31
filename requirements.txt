@@ -1,0 +1,10 @@
+# このファイルはAIによって生成されたコンテンツを含みます。
+
+# Markdown to HTML conversion
+markdown>=3.4
+
+# HTML parsing and manipulation
+beautifulsoup4>=4.12
+
+# Fast XML/HTML parser for BeautifulSoup
+lxml>=4.9
