@@ -1,0 +1,21 @@
+# Work directory (development/testing files)
+work/
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test output files
+test-*.html
+*-test.html
