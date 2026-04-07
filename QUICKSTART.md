@@ -34,6 +34,18 @@ pip install -r requirements.txt
 
 ### 3. 変換を実行
 
+#### 推奨: ラッパースクリプトを使用（最も簡単）
+
+```bash
+# 基本的な使い方（venvを自動判定・アクティベート）
+./convert.sh "記事.md"
+
+# 出力ファイル名を指定
+./convert.sh "記事.md" "output.html"
+```
+
+#### 従来の方法: Pythonスクリプトを直接実行
+
 ```bash
 # 基本的な使い方
 python convert.py "記事.md"
@@ -87,7 +99,15 @@ python convert.py "記事.md" "output.html"
 
 ### Q: WSLで仮想環境を毎回有効化する必要がある？
 
-A: はい。作業開始時に以下を実行：
+A: **ラッパースクリプト（`convert.sh`）を使えば不要です！**
+
+```bash
+# venvの有無を自動判定して実行
+cd techxchange-blog-tools
+./convert.sh "記事.md"
+```
+
+従来の方法で手動管理する場合は、作業開始時に以下を実行：
 
 ```bash
 cd techxchange-blog-tools
@@ -148,19 +168,25 @@ pip install -r requirements.txt
 
 ## 🎓 使用例
 
-### 例1: 基本的な変換
+### 例1: ラッパースクリプトで基本的な変換（推奨）
+
+```bash
+./convert.sh "../ブログディレクトリ/記事.md"
+```
+
+### 例2: ラッパースクリプトで出力先を指定
+
+```bash
+./convert.sh "記事.md" "techxchange.html"
+```
+
+### 例3: 従来の方法（Pythonスクリプト直接実行）
 
 ```bash
 python convert.py "../ブログディレクトリ/記事.md"
 ```
 
-### 例2: 出力先を指定
-
-```bash
-python convert.py "記事.md" "techxchange.html"
-```
-
-### 例3: WSL環境
+### 例4: WSL環境で手動venv管理
 
 ```bash
 # 仮想環境を有効化
