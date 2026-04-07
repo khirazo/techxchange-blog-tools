@@ -97,7 +97,33 @@ python convert.py --help
 
 ## 使い方
 
-### 基本的な使い方
+### 推奨: ラッパースクリプトを使用（最も簡単）
+
+venvの有無を自動判定し、必要に応じてアクティベートしてから実行します。
+
+```bash
+# WSL/Linux/Mac環境
+cd techxchange-blog-tools
+./convert.sh "記事.md"
+
+# 出力ファイル名を指定
+./convert.sh "記事.md" "output.html"
+
+# 別のディレクトリのファイルを変換
+./convert.sh "../ブログディレクトリ/記事.md"
+
+# ヘルプを表示
+./convert.sh --help
+```
+
+**特徴:**
+- ✅ venvの存在を自動チェック
+- ✅ venvがあれば自動でアクティベート
+- ✅ venvがなければシステムPythonを使用
+- ✅ 毎回手動でvenvをアクティベートする必要なし
+- ✅ エラーハンドリングとわかりやすいメッセージ
+
+### 従来の方法: Pythonスクリプトを直接実行
 
 ```bash
 # 方法1: pythonコマンドで実行
@@ -113,7 +139,7 @@ python convert.py "記事.md" "output.html"
 python convert.py "../ブログディレクトリ/記事.md" "../ブログディレクトリ/output.html"
 ```
 
-### WSL環境での使い方
+### WSL環境で手動でvenvを管理する場合
 
 ```bash
 # 仮想環境を有効化
@@ -210,12 +236,16 @@ Bob/VSCode/TyporaなどでMarkdownファイルを作成します。
 ### 2. HTMLに変換
 
 ```bash
-# WSL環境（仮想環境を有効化してから）
+# 推奨: ラッパースクリプトを使用（venv自動判定）
+cd techxchange-blog-tools
+./convert.sh "../ブログディレクトリ/記事.md"
+
+# 従来の方法: WSL環境（仮想環境を手動管理）
 cd techxchange-blog-tools
 source venv/bin/activate
 python convert.py "../ブログディレクトリ/記事.md"
 
-# Windows/Mac/Linux環境
+# 従来の方法: Windows/Mac/Linux環境
 cd techxchange-blog-tools
 python convert.py "../ブログディレクトリ/記事.md"
 ```
@@ -241,6 +271,7 @@ python convert.py "../ブログディレクトリ/記事.md"
 techxchange-blog-tools/
 ├── README.md                  # このファイル
 ├── QUICKSTART.md              # クイックガイド
+├── convert.sh                 # ラッパースクリプト（推奨）
 ├── convert.py                 # 変換スクリプト（Python）
 ├── requirements.txt           # Python依存関係
 ├── .gitignore                 # Git除外設定
@@ -367,20 +398,28 @@ pip install -r requirements.txt
 
 ## 使用例
 
-### 例1: 基本的な変換
+### 例1: ラッパースクリプトで基本的な変換（推奨）
+
+```bash
+cd techxchange-blog-tools
+./convert.sh "../GCM2使用方法1 CSVインポート/GCM2使用方法1 CSVインポート.md"
+```
+
+### 例2: ラッパースクリプトで出力ファイル名を指定
+
+```bash
+cd techxchange-blog-tools
+./convert.sh "../QSR OSS版紹介ブログ/QSR OSS版紹介ブログ.md" "../QSR OSS版紹介ブログ/techxchange-qsr.html"
+```
+
+### 例3: 従来の方法（Pythonスクリプト直接実行）
 
 ```bash
 cd techxchange-blog-tools
 python convert.py "../GCM2使用方法1 CSVインポート/GCM2使用方法1 CSVインポート.md"
 ```
 
-### 例2: 出力ファイル名を指定
-
-```bash
-python convert.py "../QSR OSS版紹介ブログ/QSR OSS版紹介ブログ.md" "../QSR OSS版紹介ブログ/techxchange-qsr.html"
-```
-
-### 例3: WSL環境での使用
+### 例4: WSL環境で手動venv管理
 
 ```bash
 # 仮想環境を有効化
