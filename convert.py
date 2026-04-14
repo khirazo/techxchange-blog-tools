@@ -93,6 +93,41 @@ def normalize_list_indentation(content: str) -> str:
     return '\n'.join(normalized_lines)
 
 
+def fix_list_after_colon(content: str) -> str:
+    """
+    コロンの直後にリスト項目が続く場合、空行を挿入
+    
+    Typoraなどの寛容なエディターではコロン直後のリストも表示されるが、
+    標準Markdownパーサーではリストとして認識されない。
+    この関数は自動的に空行を挿入する。
+    
+    Args:
+        content: Markdownコンテンツ
+        
+    Returns:
+        空行が挿入されたコンテンツ
+    """
+    import re
+    
+    lines = content.split('\n')
+    fixed_lines = []
+    
+    for i, line in enumerate(lines):
+        fixed_lines.append(line)
+        
+        # 現在の行がコロン（：または:）で終わるかチェック
+        if line.strip() and (line.rstrip().endswith('：') or line.rstrip().endswith(':')):
+            # 次の行が存在し、リスト項目で始まるかチェック
+            if i + 1 < len(lines):
+                next_line = lines[i + 1]
+                # 次の行がリスト項目（-, *, +, 数字.）で始まり、空行でない場合
+                if next_line.strip() and re.match(r'^\s*[-*+]|\s*\d+\.', next_line):
+                    # 空行を挿入
+                    fixed_lines.append('')
+    
+    return '\n'.join(fixed_lines)
+
+
 def convert_to_html(content: str) -> Tuple[str, str]:
     """
     Markdown→HTML変換（目次付き）
@@ -220,6 +255,9 @@ def convert_markdown_to_html(input_file: Path, output_file: Path) -> None:
     
     # 画像をプレースホルダーに変換
     markdown_content = process_images(markdown_content)
+    
+    # コロン直後のリスト項目に空行を挿入
+    markdown_content = fix_list_after_colon(markdown_content)
     
     # 入れ子リストのインデントを正規化（3スペース→4スペース）
     markdown_content = normalize_list_indentation(markdown_content)
