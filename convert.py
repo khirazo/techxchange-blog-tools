@@ -53,6 +53,46 @@ def process_images(content: str) -> str:
     return re.sub(pattern, replacement, content)
 
 
+def normalize_list_indentation(content: str) -> str:
+    """
+    入れ子リストのインデントを正規化（3スペース→4スペース）
+    
+    Markdownパーサーは入れ子リストに4スペースのインデントを要求するが、
+    一部のエディターは3スペースを使用する。この関数は自動的に変換する。
+    
+    Args:
+        content: Markdownコンテンツ
+        
+    Returns:
+        インデントが正規化されたコンテンツ
+    """
+    import re
+    
+    lines = content.split('\n')
+    normalized_lines = []
+    
+    for line in lines:
+        # 行頭の空白を検出
+        match = re.match(r'^(\s*)(.*)$', line)
+        if match:
+            indent = match.group(1)
+            rest = match.group(2)
+            
+            # リスト項目（-, *, +, 数字.）で始まる行かチェック
+            if rest and re.match(r'^[-*+]|\d+\.', rest):
+                # インデントが3の倍数の場合、4の倍数に変換
+                indent_len = len(indent)
+                if indent_len > 0 and indent_len % 3 == 0 and indent_len % 4 != 0:
+                    # 3スペース単位を4スペース単位に変換
+                    new_indent_len = (indent_len // 3) * 4
+                    normalized_lines.append(' ' * new_indent_len + rest)
+                    continue
+        
+        normalized_lines.append(line)
+    
+    return '\n'.join(normalized_lines)
+
+
 def convert_to_html(content: str) -> Tuple[str, str]:
     """
     Markdown→HTML変換（目次付き）
@@ -180,6 +220,9 @@ def convert_markdown_to_html(input_file: Path, output_file: Path) -> None:
     
     # 画像をプレースホルダーに変換
     markdown_content = process_images(markdown_content)
+    
+    # 入れ子リストのインデントを正規化（3スペース→4スペース）
+    markdown_content = normalize_list_indentation(markdown_content)
     
     # Markdown→HTML変換（目次付き）
     toc_html, body_html = convert_to_html(markdown_content)
